@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234f46e5'%3E%3Cpath d='M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-1.1c0-1.6-3-2.4-4.5-2.4s-4.5.8-4.5 2.4v1.1h9M14 6a3 3 0 1 0 0 6 3 3 0 0 0 0-6M6 8.5v2h2v1H6v2H5v-2H3v-1h2v-2h1z'/%3E%3C/svg%3E" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agenda de Contatos Web - Supabase</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CSS Personalizado -->
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+  <!-- Hero Header -->
+  <header class="app-hero py-4 mb-4">
+    <div class="container">
+      <div class="row align-items-center g-3">
+        <div class="col-md-6 col-12 text-center text-md-start">
+          <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-2">
+            <i class="bi bi-person-lines-fill fs-2"></i>
+            <h1 class="h3 m-0 font-weight-bold tracking-tight">Agenda de Contatos</h1>
+          </div>
+          <p class="text-white-50 m-0">Gerencie seus contatos na nuvem de forma rápida e segura</p>
+        </div>
+        <div class="col-md-6 col-12 d-flex flex-wrap justify-content-center justify-content-md-end align-items-center gap-3">
+          <!-- Status do Supabase -->
+          <div id="connectionStatusContainer" class="bg-dark bg-opacity-25 px-3 py-2 rounded-4 text-white d-flex align-items-center gap-2">
+            <span class="status-dot bg-warning" id="statusDot"></span>
+            <span id="statusText" class="small fw-medium">Verificando...</span>
+            <button class="btn btn-sm btn-link text-white p-0 ms-1 line-height-1" data-bs-toggle="modal" data-bs-target="#configDemoModal" title="Ver Informações do Banco" id="infoDatabaseBtn">
+              <i class="bi bi-info-circle-fill"></i>
+            </button>
+          </div>
+          <!-- Botão Novo Contato -->
+          <button class="btn btn-light fw-semibold px-4 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2" id="openAddModalBtn" data-bs-toggle="modal" data-bs-target="#contactFormModal">
+            <i class="bi bi-person-plus-fill fs-5"></i>
+            <span>Novo Contato</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Container Principal -->
+  <main class="container flex-grow-1 pb-5">
+    
+    <!-- Filtros, Busca e Estatísticas -->
+    <div class="row g-4 mb-4">
+      <div class="col-12">
+        <div class="card p-3 border-0 rounded-4 shadow-sm">
+          <div class="row g-3 align-items-center">
+            
+            <!-- Campo de Busca -->
+            <div class="col-lg-5 col-md-12">
+              <div class="input-group">
+                <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" class="form-control bg-light border-0 py-2" id="searchInput" placeholder="Buscar por nome, telefone, email ou notas...">
+                <button class="btn btn-outline-secondary border-0 bg-light" id="clearSearchBtn" style="display:none;" type="button">
+                  <i class="bi bi-x-circle-fill text-muted"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Filtros de Categorias (Pills) -->
+            <div class="col-lg-5 col-md-8 col-12">
+              <ul class="nav filter-pills align-items-center m-0 p-0 list-unstyled" id="categoryFilters">
+                <li><a href="#" class="nav-link active" data-category="Todos">Todos</a></li>
+                <li><a href="#" class="nav-link" data-category="Trabalho">Trabalho</a></li>
+                <li><a href="#" class="nav-link" data-category="Família">Família</a></li>
+                <li><a href="#" class="nav-link" data-category="Amigos">Amigos</a></li>
+                <li><a href="#" class="nav-link" data-category="Outros">Outros</a></li>
+              </ul>
+            </div>
+
+            <!-- Toggle Visual e Favoritos -->
+            <div class="col-lg-2 col-md-4 col-12 d-flex justify-content-start justify-content-md-end gap-2">
+              <!-- Filtro de Favoritos -->
+              <button class="btn btn-outline-warning d-flex align-items-center gap-1 px-3 py-2 rounded-3 fs-9" id="filterFavoritesBtn" title="Filtrar Favoritos">
+                <i class="bi bi-star"></i>
+                <span class="d-md-none d-lg-inline small font-weight-bold">Favoritos</span>
+              </button>
+              
+              <!-- Alternador de Layout GRID / LISTA -->
+              <div class="btn-group rounded-3 overflow-hidden shadow-2xs" role="group" id="layoutToggle">
+                <button type="button" class="btn btn-light border py-2 px-3 active" id="gridToggle" title="Visualizar em Grid">
+                  <i class="bi bi-grid-fill"></i>
+                </button>
+                <button type="button" class="btn btn-light border py-2 px-3" id="listToggle" title="Visualizar em Lista">
+                  <i class="bi bi-list-task"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estatísticas Rápidas -->
+    <div class="row g-3 mb-4 text-center">
+      <div class="col-3 col-md">
+        <div class="card border-0 rounded-4 shadow-2xs py-2 bg-white">
+          <div class="small text-muted fw-medium">Contatos</div>
+          <div class="h5 m-0 fw-bold text-primary" id="statTotal">0</div>
+        </div>
+      </div>
+      <div class="col-3 col-md">
+        <div class="card border-0 rounded-4 shadow-2xs py-2 bg-white">
+          <div class="small text-muted fw-medium">Favoritos</div>
+          <div class="h5 m-0 fw-bold text-warning" id="statFavorites">0</div>
+        </div>
+      </div>
+      <div class="col-3 col-md-2 col-lg">
+        <div class="card border-0 rounded-4 shadow-2xs py-2 bg-white">
+          <div class="small text-muted fw-medium">Trabalho</div>
+          <div class="h5 m-0 fw-bold text-info" id="statTrabalho">0</div>
+        </div>
+      </div>
+      <div class="col-3 col-md-2 col-lg">
+        <div class="card border-0 rounded-4 shadow-2xs py-2 bg-white">
+          <div class="small text-muted fw-medium font-weight-bold">Família</div>
+          <div class="h5 m-0 fw-bold text-success" id="statFamilia">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Área de Exibição dos Contatos -->
+    <div id="contactsSpinner" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Carregando contatos...</span>
+      </div>
+      <p class="text-muted mt-3 fw-medium" id="spinnerText">Sincronizando com a nuvem do Supabase...</p>
+    </div>
+
+    <!-- Container Grid de Contatos -->
+    <div class="row g-4 d-none" id="contactsGrid">
+      <!-- Inserido dinamicamente via JS -->
+    </div>
+
+    <!-- Lista/Tabela de Contatos -->
+    <div class="table-responsive d-none" id="contactsListContainer">
+      <table class="table custom-table">
+        <thead>
+          <tr>
+            <th width="80">Avatar</th>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th class="d-none d-md-table-cell">E-mail</th>
+            <th class="d-none d-lg-table-cell">Categoria</th>
+            <th width="150" class="text-end">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="contactsListBody">
+          <!-- Inserido dinamicamente via JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- State de Nenhum Contato Encontrado (Busca ou Filtro Vazio) -->
+    <div class="d-none" id="emptyState">
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <i class="bi bi-people"></i>
+        </div>
+        <h3 class="h4 fw-bold">Nenhum contato encontrado</h3>
+        <p class="text-muted col-md-6 mx-auto mb-4" id="emptyStateMessage">Você ainda não possui contatos cadastrados. Adicione seu primeiro contato para começar a organizar sua agenda!</p>
+        <div class="d-flex justify-content-center gap-2">
+          <button class="btn glow-btn-primary fw-medium px-4 py-2 rounded-3" data-bs-toggle="modal" data-bs-target="#contactFormModal" id="addFirstContactBtn">
+            <i class="bi bi-person-plus-fill me-1"></i> Adicionar Contato
+          </button>
+          <button class="btn btn-outline-secondary fw-medium px-4 py-2 rounded-3" id="loadSamplesBtn">
+            <i class="bi bi-magic me-1"></i> Carregar Exemplos
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Rodapé -->
+  <footer class="bg-white border-top py-3 mt-auto">
+    <div class="container text-center">
+      <p class="text-muted small m-0">&copy; 2026 Agenda de Contatos Web. Desenvolvido com HTML5, CSS3, JS Vanilla, Bootstrap & Supabase.</p>
+    </div>
+  </footer>
+
+  <!-- FLOATING ACTION BUTTON (Mobile) -->
+  <button class="btn floating-add-btn glow-btn-primary text-white" data-bs-toggle="modal" data-bs-target="#contactFormModal" title="Adicionar Novo Contato">
+    <i class="bi bi-plus-lg fs-4"></i>
+  </button>
+
+
+  <!-- MODAL: FORMULÁRIO DE CONTATO (ADICIONAR & EDITAR) -->
+  <div class="modal fade" id="contactFormModal" tabindex="-1" aria-labelledby="contactFormModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title fw-bold text-dark" id="contactFormModalLabel">
+            <i class="bi bi-person-plus-fill text-primary me-2"></i>Novo Contato
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <form id="contactForm">
+          <!-- ID escondido para fluxo de edição -->
+          <input type="hidden" id="contactIdInput">
+          
+          <div class="modal-body p-4">
+            
+            <!-- Campo Nome Completo -->
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="contactName" placeholder="Nome Completo" required>
+              <label for="contactName"><i class="bi bi-person me-2"></i>Nome Completo *</label>
+              <div class="invalid-feedback">Por favor, insira o nome completo do contato.</div>
+            </div>
+
+            <!-- Campo Telefone -->
+            <div class="form-floating mb-3">
+              <input type="tel" class="form-control" id="contactPhone" placeholder="(00) 00000-0000" required>
+              <label for="contactPhone"><i class="bi bi-telephone me-2"></i>Telefone/Celular *</label>
+              <div class="invalid-feedback">Por favor, insira um número de telefone válido.</div>
+            </div>
+
+            <!-- Campo Email -->
+            <div class="form-floating mb-3">
+              <input type="email" class="form-control" id="contactEmail" placeholder="email@exemplo.com">
+              <label for="contactEmail"><i class="bi bi-envelope me-2"></i>E-mail (Opcional)</label>
+              <div class="invalid-feedback">Insira um endereço de e-mail válido.</div>
+            </div>
+
+            <!-- Linha Dupla: Categoria e Favorito -->
+            <div class="row g-3 mb-3">
+              <div class="col-8">
+                <div class="form-floating">
+                  <select class="form-select" id="contactCategory">
+                    <option value="Trabalho">Trabalho</option>
+                    <option value="Família" selected>Família</option>
+                    <option value="Amigos">Amigos</option>
+                    <option value="Outros">Outros</option>
+                  </select>
+                  <label for="contactCategory"><i class="bi bi-tag me-2"></i>Categoria</label>
+                </div>
+              </div>
+              <div class="col-4 d-flex align-items-center justify-content-center">
+                <div class="form-check form-switch fs-5">
+                  <input class="form-check-input" type="checkbox" role="switch" id="contactFavorite">
+                  <label class="form-check-label fs-7 text-muted" for="contactFavorite">
+                    <i class="bi bi-star-fill text-warning"></i> Fav
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Campo Observações -->
+            <div class="form-floating mb-2">
+              <textarea class="form-control" placeholder="Adicione notas ou observações..." id="contactNotes" style="height: 100px"></textarea>
+              <label for="contactNotes"><i class="bi bi-journal-text me-2"></i>Observações</label>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary px-4 py-2 rounded-3" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn glow-btn-primary px-4 py-2 rounded-3" id="saveContactBtn">
+              <i class="bi bi-check-lg"></i> Salvar Contato
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL: DETALHES DO CONTATO -->
+  <div class="modal fade" id="contactDetailsModal" tabindex="-1" aria-labelledby="contactDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0">
+        <div class="modal-header border-0 bg-light pb-0 position-relative">
+          <button type="button" class="btn-close ms-auto position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body p-4 text-center">
+          
+          <!-- Favorito Toggle Inline -->
+          <div class="position-absolute fs-3" style="top: 15px; left: 20px;">
+            <i class="bi bi-star favorite-star" id="detailFavoriteStar" title="Alternar favorito inline"></i>
+          </div>
+
+          <!-- Avatar e Info Principal -->
+          <div class="d-flex flex-column align-items-center mb-4">
+            <div class="contact-avatar mb-3" id="detailAvatar" style="width: 84px; height: 84px; font-size: 2.25rem;">X</div>
+            <h4 class="fw-bold m-0 text-dark" id="detailName">Nome do Contato</h4>
+            <span class="badge badge-categoria mt-2" id="detailCategory">Categoria</span>
+          </div>
+
+          <!-- Grid de Informações -->
+          <div class="row g-3 text-start bg-light rounded-4 p-3 mb-4">
+            <div class="col-12 pb-2 border-bottom">
+              <div class="text-muted d-block small mb-1"><i class="bi bi-telephone-fill me-1"></i>Telefone</div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-dark fs-6" id="detailPhone">(00) 00000-0000</span>
+                <a href="#" class="btn btn-sm btn-outline-primary rounded-circle" id="detailCallLink" title="Ligar">
+                  <i class="bi bi-telephone-outbound-fill"></i>
+                </a>
+              </div>
+            </div>
+
+            <div class="col-12 pb-2 border-bottom" id="detailEmailContainer">
+              <div class="text-muted d-block small mb-1"><i class="bi bi-envelope-fill me-1"></i>E-mail</div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="text-dark truncate-text" id="detailEmail">email@provedor.com</span>
+                <a href="#" class="btn btn-sm btn-outline-primary rounded-circle" id="detailEmailLink" title="Enviar E-mail">
+                  <i class="bi bi-envelope-open-fill"></i>
+                </a>
+              </div>
+            </div>
+
+            <div class="col-12" id="detailNotesContainer">
+              <div class="text-muted d-block small mb-1"><i class="bi bi-journal-text me-1"></i>Observações</div>
+              <p class="text-dark small m-0" id="detailNotes" style="white-space: pre-wrap; font-style: italic;">Nenhuma observação.</p>
+            </div>
+          </div>
+
+          <!-- Ações do Contato -->
+          <div class="d-flex justify-content-between gap-2">
+            <button class="btn btn-danger flex-fill py-2 rounded-3" id="detailDeleteBtn">
+              <i class="bi bi-trash3-fill me-1"></i>Excluir
+            </button>
+            <button class="btn btn-primary glow-btn-primary flex-fill py-2 rounded-3" id="detailEditBtn">
+              <i class="bi bi-pencil-square me-1"></i>Editar
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL: INSTRUÇÕES / CONFIGURAÇÃO DO SUPABASE -->
+  <div class="modal fade" id="configDemoModal" tabindex="-1" aria-labelledby="configDemoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+      <div class="modal-content border-0">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title fw-bold" id="configDemoModalLabel">
+            <i class="bi bi-database-fill-gear text-info me-2"></i>Configuração de Persistência Supabase
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body p-4">
+          
+          <div class="alert alert-info d-flex border-0 shadow-3xs" role="alert">
+            <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+            <div>
+              <p class="fw-bold mb-1">Como funciona a persistência?</p>
+              O aplicativo verifica se você possui as chaves de ambiente konfiguradas no seu arquivo <b>.env.local</b> ou no arquivo <b>supabase.js</b>. Se as chaves estiverem vazias, o aplicativo <b>utiliza automaticamente o LocalStorage</b> em seu navegador para você conseguir testar 100% de todo o CRUD agora mesmo!
+            </div>
+          </div>
+
+          <h6 class="fw-bold text-dark mt-4 mb-3"><i class="bi bi-patch-check text-primary me-2"></i>Passo 1: Criando a Tabela no Supabase</h6>
+          <p>No console do Supabase, acesse o <b>SQL Editor</b>, crie uma nova query e execute o comando abaixo para instanciar a tabela de contatos correta:</p>
+          
+          <div class="bg-light p-3 rounded-3 border font-monospace position-relative mb-4">
+            <button class="btn btn-sm btn-outline-secondary position-absolute end-0 top-0 m-2" id="copySqlBtn" title="Copiar query">
+              <i class="bi bi-clipboard"></i> Copiar
+            </button>
+            <pre class="m-0 fs-7 text-dark" id="sqlQueryText">-- Crie a tabela contatos
+CREATE TABLE contatos (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  nome text NOT NULL,
+  telefone text NOT NULL,
+  email text,
+  categoria text DEFAULT 'Outros'::text,
+  observacao text,
+  favorito boolean DEFAULT false NOT NULL
+);
+
+-- Habilite as políticas de segurança padrão ou libere para testes rápidos (RLS)
+ALTER TABLE contatos ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Liberação para CRUD de Contatos" ON contatos 
+  FOR ALL USING (true) WITH CHECK (true);</pre>
+          </div>
+
+          <h6 class="fw-bold text-dark mb-3"><i class="bi bi-key-fill text-primary me-2"></i>Passo 2: Configurando as Chaves de Acesso</h6>
+          <p>Crie um arquivo chamado <code>.env.local</code> na raiz do projeto e declare a sua URL e Chave Anon do projeto. O Vite as carregará automaticamente:</p>
+          <div class="bg-light p-3 rounded-3 border font-monospace position-relative">
+            <pre class="m-0 fs-7 text-dark"># Seu arquivo .env.local na raiz
+VITE_SUPABASE_URL=https://seu-id-de-projeto.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSJ9...</pre>
+          </div>
+          <p class="mt-2 small text-muted"><em>Alternativamente, você também pode colar as chaves diretamente nas constantes <code>SUPABASE_URL</code> e <code>SUPABASE_ANON_KEY</code> no seu arquivo <code>src/supabase.js</code> para uma inicialização rápida!</em></p>
+
+        </div>
+        <div class="modal-footer bg-light">
+          <div class="me-auto text-muted small d-flex align-items-center gap-1">
+            <span id="modalConnectionStatusText">Estado Atual:</span>
+            <span class="badge bg-warning ms-1" id="modalConnectionStatusBadge">Modo Local Storage</span>
+          </div>
+          <button type="button" class="btn btn-secondary px-4 py-2 rounded-3" data-bs-dismiss="modal">Entendido!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- TOASTS DE FLUTUAÇÃO DE NOTIFICAÇÃO -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer">
+    <!-- Toasts serão criados via JS para evitar poluição visual -->
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle (com Popper) para controle de Modais e Toasts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Script Externo: SDK do Supabase carregado do CDN com segurança -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Script Principal da Aplicação -->
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

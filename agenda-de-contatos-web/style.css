@@ -1,0 +1,301 @@
+/* 
+ * CSS Personalizado - Agenda de Contatos Web
+ * Complementando o Bootstrap 5 com transições suaves, customizações de cores, avatares dinâmicos e sombras modernas.
+ */
+
+:root {
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+  --accent-color: #f59e0b;
+  --bg-color: #f8fafc;
+  --card-bg: #ffffff;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --border-light: #e2e8f0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-dark);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Transições suaves globais */
+a, button, .card, .badge, .nav-link, .form-control {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Header e Hero */
+.app-hero {
+  background: linear-gradient(135deg, #4f46e5 0%, #312e81 100%);
+  color: #ffffff;
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.2), 0 8px 10px -6px rgba(79, 70, 229, 0.15);
+}
+
+.glow-btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.4);
+}
+
+.glow-btn-primary:hover {
+  background-color: var(--primary-hover);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 rgba(79, 70, 229, 0.5);
+}
+
+/* Conexão Badge */
+.connection-badge {
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); opacity: 0.5; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.5; }
+}
+
+/* Filtros Sidebar e Barra */
+.filter-tabs .nav-link {
+  color: var(--text-muted);
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.75rem 1.25rem;
+  font-weight: 500;
+}
+
+.filter-tabs .nav-link.active {
+  color: var(--primary-color);
+  background: transparent;
+  border-bottom-color: var(--primary-color);
+}
+
+.filter-pills .nav-link {
+  border-radius: 9999px;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  background-color: var(--border-light);
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.filter-pills .nav-link.active {
+  background-color: var(--primary-color);
+  color: white;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+}
+
+/* Cards de Contato */
+.contact-card {
+  border: none;
+  border-radius: 16px;
+  background-color: var(--card-bg);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilo do Alerta de Favorito */
+.favorite-star {
+  font-size: 1.35rem;
+  color: #ccd6f6;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.2s ease;
+}
+
+.favorite-star:hover {
+  transform: scale(1.2);
+}
+
+.favorite-star.starred {
+  color: var(--accent-color);
+  filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.3));
+}
+
+/* Avatar do Contato */
+.contact-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: white;
+  box-shadow: inset 0 -4px 0 rgba(0,0,0,0.1);
+  letter-spacing: -0.5px;
+}
+
+/* Cores de Avatar Aleatórias */
+.avatar-0 { background: linear-gradient(135deg, #f87171, #ef4444); }
+.avatar-1 { background: linear-gradient(135deg, #fb923c, #f97316); }
+.avatar-2 { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+.avatar-3 { background: linear-gradient(135deg, #34d399, #10b981); }
+.avatar-4 { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+.avatar-5 { background: linear-gradient(135deg, #818cf8, #6366f1); }
+.avatar-6 { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+.avatar-7 { background: linear-gradient(135deg, #f472b6, #ec4899); }
+
+/* Detalhes de Categorias */
+.badge-categoria {
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.category-trabalho { background-color: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+.category-familia { background-color: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+.category-amigos { background-color: #fdf2f8; color: #9d174d; border: 1px solid #fbcfe8; }
+.category-outros { background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
+
+/* Grid e Lista Toggle */
+.view-toggle-btn {
+  background-color: transparent;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  font-size: 1rem;
+}
+
+.view-toggle-btn.active {
+  background-color: var(--primary-color);
+  color: white !important;
+  border-color: var(--primary-color);
+}
+
+/* Modais Modernizados */
+.modal-content {
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--border-light);
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--border-light);
+  background-color: #f8fafc;
+  padding: 1.25rem 1.5rem;
+}
+
+.form-floating > label {
+  color: var(--text-muted);
+}
+
+/* Tabela de Contatos */
+.custom-table {
+  background-color: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.custom-table th {
+  background-color: #f1f5f9;
+  border: none;
+  padding: 1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.custom-table td {
+  padding: 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.custom-table tr:last-child td {
+  border-bottom: none;
+}
+
+.custom-table tr:hover td {
+  background-color: #fafbfc;
+}
+
+/* Floating Action Button (FAB) para Mobile */
+.floating-add-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
+  z-index: 999;
+}
+
+@media (max-width: 576px) {
+  .floating-add-btn {
+    display: flex;
+  }
+}
+
+/* Toast Container customizado */
+.toast-container {
+  z-index: 1090;
+}
+
+.custom-toast {
+  background-color: #ffffff;
+  color: var(--text-dark);
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid var(--primary-color);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: white;
+  border-radius: 20px;
+  border: 2px dashed #cbd5e1;
+}
+
+.empty-state-icon {
+  background-color: #faf5ff;
+  color: var(--primary-color);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem auto;
+  font-size: 2.25rem;
+}

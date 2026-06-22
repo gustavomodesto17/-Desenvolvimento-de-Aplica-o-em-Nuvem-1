@@ -1,0 +1,8 @@
+{
+  "name": "Agenda de Contatos Web",
+  "description": "Uma agenda de contatos moderna, intuitiva e responsiva integrada ao Supabase para gerenciar seus contatos de forma eficiente com CRUD completo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
